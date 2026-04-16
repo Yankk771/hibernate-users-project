@@ -23,6 +23,14 @@ public class Util {
     public static SessionFactory getSessionFactory(){
         if(sessionFactory == null){
             Configuration configuration = new Configuration();
+            configuration.addAnnotatedClass(jm.task.core.jdbc.model.User.class);
+            configuration.setProperty("hibernate.connection.driver_class", "com.mysql.cj.jdbc.Driver");
+            configuration.setProperty("hibernate.connection.url", "jdbc:mysql://localhost:3306/jm_task");
+            configuration.setProperty("hibernate.connection.username", "root");
+            configuration.setProperty("hibernate.connection.password", "1234");
+
+            configuration.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQL8Dialect");
+            configuration.setProperty("hibernate.show_sql", "true");
 
             sessionFactory = configuration.buildSessionFactory();
         }
