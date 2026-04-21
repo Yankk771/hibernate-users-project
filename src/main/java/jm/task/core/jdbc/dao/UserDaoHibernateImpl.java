@@ -43,65 +43,102 @@ public class UserDaoHibernateImpl implements UserDao {
 
     @Override
     public void dropUsersTable() {
-        var session = sessionFactory.openSession();
-        session.beginTransaction();
+        Transaction transaction = null;
 
-        session.createSQLQuery("DROP TABLE IF EXISTS users").executeUpdate();
+        try (var session = sessionFactory.openSession()) {
+            transaction = session.beginTransaction();
 
-        session.getTransaction().commit();
-        session.close();
+            session.createSQLQuery("DROP TABLE IF EXISTS users").executeUpdate();
+
+            transaction.commit();
+
+        } catch (Exception e) {
+            if (transaction != null) {
+                transaction.rollback();
+            }
+            e.printStackTrace();
+        }
     }
 
     @Override
     public void saveUser(String name, String lastName, byte age) {
-        var session = sessionFactory.openSession();
-        session.beginTransaction();
+        Transaction transaction = null;
 
-        session.save(new User(name, lastName, age));
+        try (var session = sessionFactory.openSession()) {
+            transaction = session.beginTransaction();
 
+            session.save(new User(name, lastName, age));
 
+            transaction.commit();
 
-
-
-        session.getTransaction().commit();
-        session.close();
-
+        } catch (Exception e) {
+            if (transaction != null) {
+                transaction.rollback();
+            }
+            e.printStackTrace();
+        }
     }
 
     @Override
     public void removeUserById(long id) {
-        var session = sessionFactory.openSession();
-        session.beginTransaction();
+        Transaction transaction = null;
 
-        User user = session.get(User.class, id);
-        session.delete(user);
+        try (var session = sessionFactory.openSession()) {
+            transaction = session.beginTransaction();
 
-        session.getTransaction().commit();
-        session.close();
+            User user = session.get(User.class, id);
+            session.delete(user);
+
+            transaction.commit();
+
+        } catch (Exception e) {
+            if (transaction != null) {
+                transaction.rollback();
+            }
+            e.printStackTrace();
+        }
     }
 
     @Override
     public List<User> getAllUsers() {
-        var session = sessionFactory.openSession();
-        session.beginTransaction();
+        Transaction transaction = null;
+        List<User> users = null;
 
-        List<User> users = session.createQuery("from User", User.class).getResultList();
+        try (var session = sessionFactory.openSession()) {
+            transaction = session.beginTransaction();
 
-        session.getTransaction().commit();
-        session.close();
+            users = session
+                    .createQuery("from User", User.class)
+                    .getResultList();
+
+            transaction.commit();
+
+        } catch (Exception e) {
+            if (transaction != null) {
+                transaction.rollback();
+            }
+            e.printStackTrace();
+        }
 
         return users;
     }
 
     @Override
     public void cleanUsersTable() {
-        var session = sessionFactory.openSession();
-        session.beginTransaction();
+        Transaction transaction = null;
 
-        session.createSQLQuery("DELETE FROM users").executeUpdate();
-        session.getTransaction().commit();
+        try (var session = sessionFactory.openSession()) {
+            transaction = session.beginTransaction();
 
-        session.close();
+            session.createSQLQuery("DELETE FROM users").executeUpdate();
 
+            transaction.commit();
+
+        } catch (Exception e) {
+            if (transaction != null) {
+                transaction.rollback();
+            }
+            e.printStackTrace();
+        }
     }
 }
